@@ -1,4 +1,4 @@
-// WAP to implement general backtracking strategy to solve 8-queens 
+// WAP to implement general backtracking strategy to solve 8-queens and take n as user input
 #include <stdio.h>
 #include <stdbool.h>
 
