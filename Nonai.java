@@ -17,7 +17,7 @@ public class Nonai {
 
             if (row < 0 || row >= 3 || col < 0 || col >= 3 || board[row][col] != ' ') {
                 System.out.println("Invalid move. Try again.");
-                continue;
+                continue; 
             }
 
             board[row][col] = currentPlayer;
