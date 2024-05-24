@@ -2,7 +2,7 @@ import java.util.*;
 
 class State {
     int missionariesLeft, cannibalsLeft, missionariesRight, cannibalsRight;
-    boolean boat; /
+    boolean boat; 
     State parent;
 
     State(int ml, int cl, int mr, int cr, boolean b) {
@@ -11,11 +11,19 @@ class State {
         missionariesRight = mr;
         cannibalsRight = cr;
         boat = b;
+        parent = null;
     }
 
     boolean isValid() {
-        if (missionariesLeft < 0 || missionariesRight < 0 || cannibalsLeft < 0 || cannibalsRight < 0  || (missionariesLeft != 0 && missionariesLeft < cannibalsLeft)  || (missionariesRight != 0 && missionariesRight < cannibalsRight))
+        if (missionariesLeft < 0 || missionariesRight < 0 || cannibalsLeft < 0 || cannibalsRight < 0) {
             return false;
+        }
+        if (missionariesLeft > 0 && missionariesLeft < cannibalsLeft) {
+            return false;
+        }
+        if (missionariesRight > 0 && missionariesRight < cannibalsRight) {
+            return false;
+        }
         return true;
     }
 
@@ -26,9 +34,26 @@ class State {
     void print() {
         System.out.println("(" + missionariesLeft + ", " + cannibalsLeft + ", " + missionariesRight + ", " + cannibalsRight + ", " + (boat ? "left" : "right") + ")");
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        State state = (State) o;
+        return missionariesLeft == state.missionariesLeft &&
+               cannibalsLeft == state.cannibalsLeft &&
+               missionariesRight == state.missionariesRight &&
+               cannibalsRight == state.cannibalsRight &&
+               boat == state.boat;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(missionariesLeft, cannibalsLeft, missionariesRight, cannibalsRight, boat);
+    }
 }
 
-public class DFS {
+public class Main {
     static void printPath(State state) {
         List<State> path = new ArrayList<>();
         while (state != null) {
@@ -56,19 +81,21 @@ public class DFS {
                 return true;
             }
 
-            visited.add(current.missionariesLeft + " " + current.cannibalsLeft + " " + current.boat + " "  + current.missionariesRight + " " + current.cannibalsRight);
+            visited.add(current.missionariesLeft + " " + current.cannibalsLeft + " " + current.boat + " " + current.missionariesRight + " " + current.cannibalsRight);
 
             int m[] = { 1, 0, 2, 0, 1 }, c[] = { 0, 1, 0, 2, 1 };
 
             for (int i = 0; i < 5; i++) {
+                State nextState;
                 if (current.boat) {
-                    State nextState = new State(current.missionariesLeft - m[i], current.cannibalsLeft - c[i], current.missionariesRight + m[i], current.cannibalsRight + c[i], false);
-                    if (nextState.isValid() && !visited.contains(nextState.missionariesLeft + " " + nextState.cannibalsLeft + " " + nextState.boat + " " + nextState.missionariesRight + " " + nextState.cannibalsRight))
-                        stack.push(nextState);
+                    nextState = new State(current.missionariesLeft - m[i], current.cannibalsLeft - c[i], current.missionariesRight + m[i], current.cannibalsRight + c[i], false);
                 } else {
-                    State nextState = new State(current.missionariesLeft + m[i], current.cannibalsLeft + c[i],   current.missionariesRight - m[i], current.cannibalsRight - c[i], true);
-                    if (nextState.isValid() && !visited.contains(nextState.missionariesLeft + " " + nextState.cannibalsLeft + " " + nextState.boat + " " + nextState.missionariesRight + " "                            + nextState.cannibalsRight))
-                        stack.push(nextState);
+                    nextState = new State(current.missionariesLeft + m[i], current.cannibalsLeft + c[i], current.missionariesRight - m[i], current.cannibalsRight - c[i], true);
+                }
+
+                if (nextState.isValid() && !visited.contains(nextState.missionariesLeft + " " + nextState.cannibalsLeft + " " + nextState.boat + " " + nextState.missionariesRight + " " + nextState.cannibalsRight)) {
+                    nextState.parent = current;
+                    stack.push(nextState);
                 }
             }
         }
@@ -80,11 +107,9 @@ public class DFS {
         State initial = new State(3, 3, 0, 0, true);
         System.out.println("Initial State:");
         initial.print();
-        System.out.println("\nIntermediate States:");
         boolean solutionExists = dfs(initial, new HashSet<>());
         if (!solutionExists) {
             System.out.println("No solution exists.");
         }
     }
 }
-
