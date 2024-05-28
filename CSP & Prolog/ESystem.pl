@@ -1,5 +1,13 @@
-% Rule
-sentiment(X):-positive(X),negative(X),neutral(X).
+% Rule to classify sentiment as positive
+sentiment(X, positive) :- positive(X).
+
+% Rule to classify sentiment as negative
+sentiment(X, negative) :- negative(X).
+
+% Rule to classify sentiment as neutral
+sentiment(X, neutral) :- neutral(X).
+
+% Statement
 positive(good).
 positive(happy).
 positive(lovely).
@@ -12,5 +20,5 @@ negative(wrong).
 negative(worst).
 neutral(ok).
 neutral(fine).
-neutral(middlegrond).
+neutral(middleground).
 
